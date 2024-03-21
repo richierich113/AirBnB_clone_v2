@@ -119,51 +119,56 @@ class HBNBCommand(cmd.Cmd):
             print("** class name missing **")
             return
         elif args:
+            # split parameters with delimeter, space (' ')
+            # assign 1st parameter as the command (ie. the class name to create)
             params = args.split(' ')
             command = params[0]
+            # if class doesn't exist in the classes, show corresponding message
             if command not in HBNBCommand.classes:
                 print("** class doesn't exist **")
                 return
             else:
-                param_dict = {}
+                # if class exists, add the parameters, which starts from the params[1], to a dict
+                parameter_dict = {}
                 for param in params[1:]:
                     if len(param.split('=')) == 2:
-                        param_key, raw_param_val = param.split('=')
-                        param_val = raw_param_val[1:-1]
+                        parameter_key, param_value_raw = param.split('=')
+                        parameter_val = param_value_raw[1:-1]
                         # print(f"param: {param}")
-                        if isinstance(eval(raw_param_val), int):
-                            # print(f"{param_key}:{int(raw_param_val)}")
-                            # TODO: Possible bug - param_key not valid dict key
-                            #       Assume param_key is a string
-                            param_dict[param_key] = int(raw_param_val)
-                        if '"' in raw_param_val:
+                        if isinstance(eval(param_value_raw), int):
+                            # print(f"{parameter_key}:{int(param_value_raw)}")
+                            # TODO: Possible bug - parameter_key not valid dict key
+                            # Assumption: parameter_key is a string value
+                            parameter_dict[parameter_key] = int(param_value_raw)
+                        if '"' in param_value_raw:
                             # Test if <value> is string
                             # Replace '_' with ' '
-                            param_val = param_val.replace('_', ' ')
-                            # print(f"{param_key}:{param_val}")
-                            param_dict[param_key] = param_val
-                        elif '.' in raw_param_val:
+                            parameter_val = parameter_val.replace('_', ' ')
+                            # print(f"{parameter_key}:{param_val}")
+                            parameter_dict[parameter_key] = parameter_val
+                        elif '.' in param_value_raw:
                             # Test if <value> is float
                             try:
-                                # print(f"{param_key}:{float(raw_param_val)}")
-                                param_dict[param_key] = float(raw_param_val)
+                                # print(f"{parameter_key}:{float(param_value_raw)}")
+                                parameter_dict[parameter_key] = float(param_value_raw)
                                 pass
                             except ValueError:
                                 pass
-                                # print(f"not float: {raw_param_val}")
+                                # print(f"not float: {param_value_raw}")
                         else:
                             pass
                             # Doesn't fit in the above category
-                            # print(f"{param_key}:{param_val}")
+                            # print(f"{parameter_key}:{param_val}")
                         # print(param.split('='))
-        # print(param_dict)
+        # print(parameter_dict)
         new_instance = HBNBCommand.classes[command]()
-        for k, v in param_dict.items():
+        for k, v in parameter_dict.items():
             new_instance.__dict__[k] = v
         # print(new_instance.__dict__)
         storage.save()
         print(new_instance.id)
         # storage.save()
+
 
 
     def help_create(self):
