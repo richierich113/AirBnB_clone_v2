@@ -113,62 +113,57 @@ class HBNBCommand(cmd.Cmd):
         """ Overrides the emptyline method of CMD """
         pass
         
+    def parse_params(params):
+         """ get, split and verify <key=value> parameters after the class parameter"""
+        param_dict = {}
+        for param in params:
+            key_value = param.split('=')
+            if len(key_value) == 2:
+                param_key, param_val = key_value
+                param_val = param_val.strip()
+                if param_val.startswith('"') and param_val.endswith('"'):
+                    param_val = param_val[1:-1].replace('_', ' ')
+                elif '.' in param_val:
+                    try:
+                        param_val = float(param_val)
+                    except ValueError:
+                        pass
+                else:
+                    try:
+                        param_val = int(param_val)
+                    except ValueError:
+                        pass
+                param_dict[param_key] = param_val
+        return param_dict
+
+    def create_instance(class_name, param_dict):
+         """ Create an instance of any class"""
+        if class_name not in HBNBCommand.classes:
+            print("** class doesn't exist **")
+            return None
+        else:
+            new_instance = HBNBCommand.classes[class_name]()
+            for k, v in param_dict.items():
+                setattr(new_instance, k, v)
+            return new_instance
+
     def do_create(self, args):
         """ Create an object of any class"""
         if not args:
             print("** class name missing **")
             return
-        elif args:
-            # split parameters with delimeter, space (' ')
-            # assign 1st parameter as the command (ie. the class name to create)
-            params = args.split(' ')
-            command = params[0]
-            # if class doesn't exist in the classes, show corresponding message
-            if command not in HBNBCommand.classes:
-                print("** class doesn't exist **")
-                return
-            else:
-                # if class exists, add the parameters, which starts from the params[1], to a dict
-                parameter_dict = {}
-                for param in params[1:]:
-                    if len(param.split('=')) == 2:
-                        parameter_key, param_value_raw = param.split('=')
-                        parameter_val = param_value_raw[1:-1]
-                        # print(f"param: {param}")
-                        if isinstance(eval(param_value_raw), int):
-                            # print(f"{parameter_key}:{int(param_value_raw)}")
-                            # TODO: Possible bug - parameter_key not valid dict key
-                            # Assumption: parameter_key is a string value
-                            parameter_dict[parameter_key] = int(param_value_raw)
-                        if '"' in param_value_raw:
-                            # Test if <value> is string
-                            # Replace '_' with ' '
-                            parameter_val = parameter_val.replace('_', ' ')
-                            # print(f"{parameter_key}:{param_val}")
-                            parameter_dict[parameter_key] = parameter_val
-                        elif '.' in param_value_raw:
-                            # Test if <value> is float
-                            try:
-                                # print(f"{parameter_key}:{float(param_value_raw)}")
-                                parameter_dict[parameter_key] = float(param_value_raw)
-                                pass
-                            except ValueError:
-                                pass
-                                # print(f"not float: {param_value_raw}")
-                        else:
-                            pass
-                            # Doesn't fit in the above category
-                            # print(f"{parameter_key}:{param_val}")
-                        # print(param.split('='))
-        # print(parameter_dict)
-        new_instance = HBNBCommand.classes[command]()
-        for k, v in parameter_dict.items():
-            new_instance.__dict__[k] = v
-        # print(new_instance.__dict__)
-        storage.save()
-        print(new_instance.id)
-        # storage.save()
 
+        params = args.split(' ')
+        class_name = params[0]
+        if len(params) == 1:
+            print("** missing parameters **")
+            return
+
+        param_dict = parse_params(params[1:])
+        new_instance = create_instance(class_name, param_dict)
+        if new_instance:
+            storage.save()
+            print(new_instance.id)
 
 
     def help_create(self):
