@@ -113,18 +113,56 @@ class HBNBCommand(cmd.Cmd):
         """ Overrides the emptyline method of CMD """
         pass
 
-    def do_create(self, args):
-        """ Create an object of any class"""
-        if not args:
-            print("** class name missing **")
-            return
-        elif args not in HBNBCommand.classes:
-            print("** class doesn't exist **")
-            return
-        new_instance = HBNBCommand.classes[args]()
+   def parse_params(params):
+    param_dict = {}
+    for param in params:
+        key_value = param.split('=')
+        if len(key_value) == 2:
+            param_key, param_val = key_value
+            param_val = param_val.strip()
+            if param_val.startswith('"') and param_val.endswith('"'):
+                param_val = param_val[1:-1].replace('_', ' ')
+            elif '.' in param_val:
+                try:
+                    param_val = float(param_val)
+                except ValueError:
+                    pass
+            else:
+                try:
+                    param_val = int(param_val)
+                except ValueError:
+                    pass
+            param_dict[param_key] = param_val
+    return param_dict
+
+def create_instance(class_name, param_dict):
+    if class_name not in HBNBCommand.classes:
+        print("** class doesn't exist **")
+        return None
+    else:
+        new_instance = HBNBCommand.classes[class_name]()
+        for k, v in param_dict.items():
+            setattr(new_instance, k, v)
+        return new_instance
+
+def do_create(self, args):
+    """ Create an object of any class"""
+    if not args:
+        print("** class name missing **")
+        return
+
+    params = args.split(' ')
+    class_name = params[0]
+    if len(params) == 1:
+        print("** missing parameters **")
+        return
+
+    param_dict = parse_params(params[1:])
+    new_instance = create_instance(class_name, param_dict)
+    if new_instance:
         storage.save()
         print(new_instance.id)
-        storage.save()
+
 
     def help_create(self):
         """ Help information for the create method """
