@@ -113,55 +113,57 @@ class HBNBCommand(cmd.Cmd):
         """ Overrides the emptyline method of CMD """
         pass
 
-   def parse_params(params):
-    param_dict = {}
-    for param in params:
-        key_value = param.split('=')
-        if len(key_value) == 2:
-            param_key, param_val = key_value
-            param_val = param_val.strip()
-            if param_val.startswith('"') and param_val.endswith('"'):
-                param_val = param_val[1:-1].replace('_', ' ')
-            elif '.' in param_val:
-                try:
-                    param_val = float(param_val)
-                except ValueError:
-                    pass
+   def do_create(self, args):
+        """ Create an object of any class"""
+        if not args:
+            print("** class name missing **")
+            return
+        elif args:
+            params = args.split(' ')
+            command = params[0]
+            if command not in HBNBCommand.classes:
+                print("** class doesn't exist **")
+                return
             else:
-                try:
-                    param_val = int(param_val)
-                except ValueError:
-                    pass
-            param_dict[param_key] = param_val
-    return param_dict
-
-def create_instance(class_name, param_dict):
-    if class_name not in HBNBCommand.classes:
-        print("** class doesn't exist **")
-        return None
-    else:
-        new_instance = HBNBCommand.classes[class_name]()
+                param_dict = {}
+                for param in params[1:]:
+                    if len(param.split('=')) == 2:
+                        param_key, raw_param_val = param.split('=')
+                        param_val = raw_param_val[1:-1]
+                        # print(f"param: {param}")
+                        if isinstance(eval(raw_param_val), int):
+                            # print(f"{param_key}:{int(raw_param_val)}")
+                            # TODO: Possible bug - param_key not valid dict key
+                            #       Assume param_key is a string
+                            param_dict[param_key] = int(raw_param_val)
+                        if '"' in raw_param_val:
+                            # Test if <value> is string
+                            # Replace '_' with ' '
+                            param_val = param_val.replace('_', ' ')
+                            # print(f"{param_key}:{param_val}")
+                            param_dict[param_key] = param_val
+                        elif '.' in raw_param_val:
+                            # Test if <value> is float
+                            try:
+                                # print(f"{param_key}:{float(raw_param_val)}")
+                                param_dict[param_key] = float(raw_param_val)
+                                pass
+                            except ValueError:
+                                pass
+                                # print(f"not float: {raw_param_val}")
+                        else:
+                            pass
+                            # Doesn't fit in the above category
+                            # print(f"{param_key}:{param_val}")
+                        # print(param.split('='))
+        # print(param_dict)
+        new_instance = HBNBCommand.classes[command]()
         for k, v in param_dict.items():
-            setattr(new_instance, k, v)
-        return new_instance
-
-def do_create(self, args):
-    """ Create an object of any class"""
-    if not args:
-        print("** class name missing **")
-        return
-
-    params = args.split(' ')
-    class_name = params[0]
-    if len(params) == 1:
-        print("** missing parameters **")
-        return
-
-    param_dict = parse_params(params[1:])
-    new_instance = create_instance(class_name, param_dict)
-    if new_instance:
+            new_instance.__dict__[k] = v
+        # print(new_instance.__dict__)
         storage.save()
         print(new_instance.id)
+        # storage.save()
 
 
     def help_create(self):
