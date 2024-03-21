@@ -114,7 +114,7 @@ class HBNBCommand(cmd.Cmd):
         pass
         
     def parse_params(params):
-         """ get, split and verify <key=value> parameters after the class parameter"""
+        """ get, split and verify <key=value> parameters after the class parameter"""
         param_dict = {}
         for param in params:
             key_value = param.split('=')
