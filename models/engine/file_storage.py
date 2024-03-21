@@ -19,6 +19,16 @@ class FileStorage:
                 filtered[k] = v
         return filtered
 
+    def delete(self, obj=None):
+        """delete obj from __objects"""
+        if obj is None:
+            return
+        elif obj is not None:
+            key_of_obj = f'{obj.__class__.__name__}.{obj.id}'
+            if key_of_obj in FileStorage.__objects:
+                del FileStorage.__objects[key_of_obj]
+
+
     def new(self, obj):
         """Adds new object to storage dictionary"""
         self.all().update({obj.to_dict()['__class__'] + '.' + obj.id: obj})
@@ -32,14 +42,6 @@ class FileStorage:
                 temp[key] = val.to_dict()
             json.dump(temp, f)
 
-    def delete(self, obj=None):
-        """delete obj from __objects"""
-        if obj is None:
-            return
-        elif obj is not None:
-            obj_key = f'{obj.__class__.__name__}.{obj.id}'
-            if obj_key in FileStorage.__objects:
-                del FileStorage.__objects[obj_key]
 
     def reload(self):
         """Loads storage dictionary from file"""
