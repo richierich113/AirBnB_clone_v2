@@ -137,7 +137,7 @@ class HBNBCommand(cmd.Cmd):
         return param_dict
 
     def create_instance(class_name, param_dict):
-         """ Create an instance of any class"""
+        """ Create an instance of any class"""
         if class_name not in HBNBCommand.classes:
             print("** class doesn't exist **")
             return None
