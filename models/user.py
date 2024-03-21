@@ -10,6 +10,5 @@ class User(BaseModel, Base):
     # can't be null
     email = Column(String(128), nullable=False)
     password = Column(String(128), nullable=False)
-    # can be null
     first_name = Column(String(128), nullable=False)
     last_name = Column(String(128), nullable=False)
