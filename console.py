@@ -73,7 +73,7 @@ class HBNBCommand(cmd.Cmd):
                 pline = pline[2].strip()  # pline is now str
                 if pline:
                     # check for *args or **kwargs
-                    if pline[0] is '{' and pline[-1] is'}'\
+                    if pline[0] is '{' and pline[-1] is '}'\
                             and type(eval(pline)) is dict:
                         _args = pline
                     else:
@@ -112,7 +112,7 @@ class HBNBCommand(cmd.Cmd):
     def emptyline(self):
         """ Overrides the emptyline method of CMD """
         pass
-        
+
     def do_create(self, args):
         """ Create an object of any class"""
         if not args:
@@ -120,7 +120,8 @@ class HBNBCommand(cmd.Cmd):
             return
         elif args:
             # split parameters with delimeter, space (' ')
-            # assign 1st parameter as the command (ie. the class name to create)
+            # assign 1st parameter as the command
+            # (ie. the class name to create)
             params = args.split(' ')
             command = params[0]
             # if class doesn't exist in the classes, show corresponding message
@@ -128,7 +129,8 @@ class HBNBCommand(cmd.Cmd):
                 print("** class doesn't exist **")
                 return
             else:
-                # if class exists, add the parameters, which starts from the params[1], to a dict
+                # if class exists, add the parameters, which starts
+                # from the params[1], to a dict
                 parameter_dict = {}
                 for param in params[1:]:
                     if len(param.split('=')) == 2:
@@ -136,8 +138,10 @@ class HBNBCommand(cmd.Cmd):
                         parameter_val = param_value_raw[1:-1]
                         # print(f"param: {param}")
                         if isinstance(eval(param_value_raw), int):
-                            # print(f"{parameter_key}:{int(param_value_raw)}")
-                            # TODO: Possible bug - parameter_key not valid dict key
+                            # print(f"{parameter_key}:
+                            #{int(param_value_raw)}")
+                            # Possible bug - parameter_key 
+                            # is not a valid dict key
                             # Assumption: parameter_key is a string value
                             parameter_dict[parameter_key] = int(param_value_raw)
                         if '"' in param_value_raw:
@@ -149,7 +153,8 @@ class HBNBCommand(cmd.Cmd):
                         elif '.' in param_value_raw:
                             # Test if <value> is float
                             try:
-                                # print(f"{parameter_key}:{float(param_value_raw)}")
+                                # print(f"{parameter_key}
+                                # :{float(param_value_raw)}")
                                 parameter_dict[parameter_key] = float(param_value_raw)
                                 pass
                             except ValueError:
@@ -168,7 +173,6 @@ class HBNBCommand(cmd.Cmd):
         storage.save()
         print(new_instance.id)
         # storage.save()
-
 
     def help_create(self):
         """ Help information for the create method """
@@ -363,6 +367,7 @@ class HBNBCommand(cmd.Cmd):
         """ Help information for the update class """
         print("Updates an object with new information")
         print("Usage: update <className> <id> <attName> <attVal>\n")
+
 
 if __name__ == "__main__":
     HBNBCommand().cmdloop()
