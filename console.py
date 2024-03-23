@@ -73,7 +73,7 @@ class HBNBCommand(cmd.Cmd):
                 pline = pline[2].strip()  # pline is now str
                 if pline:
                     # check for *args or **kwargs
-                    if pline[0] is '{' and pline[-1] is '}'\
+                    if pline[0] == '{' and pline[-1] == '}'\
                             and type(eval(pline)) is dict:
                         _args = pline
                     else:
@@ -119,55 +119,46 @@ class HBNBCommand(cmd.Cmd):
             print("** class name missing **")
             return
         elif args:
-            # split parameters with delimeter, space (' ')
-            # assign 1st parameter as the command
-            # (ie. the class name to create)
             params = args.split(' ')
             command = params[0]
-            # if class doesn't exist in the classes, show corresponding message
             if command not in HBNBCommand.classes:
                 print("** class doesn't exist **")
                 return
             else:
-                # if class exists, add the parameters, which starts
-                # from the params[1], to a dict
-                parameter_dict = {}
+                param_dict = {}
                 for param in params[1:]:
                     if len(param.split('=')) == 2:
-                        parameter_key, param_value_raw = param.split('=')
-                        parameter_val = param_value_raw[1:-1]
+                        param_key, raw_param_val = param.split('=')
+                        param_val = raw_param_val[1:-1]
                         # print(f"param: {param}")
-                        if isinstance(eval(param_value_raw), int):
-                            # print(f"{parameter_key}:
-                            #{int(param_value_raw)}")
-                            # Possible bug - parameter_key 
-                            # is not a valid dict key
-                            # Assumption: parameter_key is a string value
-                            parameter_dict[parameter_key] = int(param_value_raw)
-                        if '"' in param_value_raw:
+                        if isinstance(eval(raw_param_val), int):
+                            # print(f"{param_key}:{int(raw_param_val)}")
+                            # TODO: Possible bug - param_key not valid dict key
+                            #       Assume param_key is a string
+                            param_dict[param_key] = int(raw_param_val)
+                        if '"' in raw_param_val:
                             # Test if <value> is string
                             # Replace '_' with ' '
-                            parameter_val = parameter_val.replace('_', ' ')
-                            # print(f"{parameter_key}:{param_val}")
-                            parameter_dict[parameter_key] = parameter_val
-                        elif '.' in param_value_raw:
+                            param_val = param_val.replace('_', ' ')
+                            # print(f"{param_key}:{param_val}")
+                            param_dict[param_key] = param_val
+                        elif '.' in raw_param_val:
                             # Test if <value> is float
                             try:
-                                # print(f"{parameter_key}
-                                # :{float(param_value_raw)}")
-                                parameter_dict[parameter_key] = float(param_value_raw)
+                                # print(f"{param_key}:{float(raw_param_val)}")
+                                param_dict[param_key] = float(raw_param_val)
                                 pass
                             except ValueError:
                                 pass
-                                # print(f"not float: {param_value_raw}")
+                                # print(f"not float: {raw_param_val}")
                         else:
                             pass
                             # Doesn't fit in the above category
-                            # print(f"{parameter_key}:{param_val}")
+                            # print(f"{param_key}:{param_val}")
                         # print(param.split('='))
-        # print(parameter_dict)
+        # print(param_dict)
         new_instance = HBNBCommand.classes[command]()
-        for k, v in parameter_dict.items():
+        for k, v in param_dict.items():
             new_instance.__dict__[k] = v
         # print(new_instance.__dict__)
         storage.save()
@@ -320,7 +311,7 @@ class HBNBCommand(cmd.Cmd):
                 args.append(v)
         else:  # isolate args
             args = args[2]
-            if args and args[0] is '\"':  # check for quoted arg
+            if args and args[0] == '\"':  # check for quoted arg
                 second_quote = args.find('\"', 1)
                 att_name = args[1:second_quote]
                 args = args[second_quote + 1:]
@@ -328,10 +319,10 @@ class HBNBCommand(cmd.Cmd):
             args = args.partition(' ')
 
             # if att_name was not quoted arg
-            if not att_name and args[0] is not ' ':
+            if not att_name and args[0] != ' ':
                 att_name = args[0]
             # check for quoted val arg
-            if args[2] and args[2][0] is '\"':
+            if args[2] and args[2][0] == '\"':
                 att_val = args[2][1:args[2].find('\"', 1)]
 
             # if att_val was not quoted arg
