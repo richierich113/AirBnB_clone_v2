@@ -1,4 +1,5 @@
-cript to pack static content into a tarball
+#!/usr/bin/python3
+"""a script to pack static content into a tarball
 """
 from fabric.api import *
 from fabric.operations import put
