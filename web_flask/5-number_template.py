@@ -20,46 +20,52 @@ Write a script that starts a Flask web application:
 
 
 from flask import Flask, render_template
-from urllib.parse import unquote
-
 app = Flask(__name__)
 
 
 @app.route('/', strict_slashes=False)
-def hello_hbnb():
+def home():
+    '''Returns the home page'''
     return 'Hello HBNB!'
 
 
 @app.route('/hbnb', strict_slashes=False)
-def display_hbnb():
+def hbnb():
+    '''Returns the hbnb page'''
     return 'HBNB'
 
 
 @app.route('/c/<text>', strict_slashes=False)
-def display_c_text(text):
-    text = unquote(text.replace('_', ' '))
-    return f'C {text}'
+def ctext(text):
+    '''Returns a subdirectory page of C'''
+    if '_' in text:
+        result = text.replace('_', ' ')
+    else:
+        result = text
+    return 'C {}'.format(result)
 
 
-@app.route('/python/', defaults={'text': 'is_cool'}, strict_slashes=False)
+@app.route('/python/', strict_slashes=False)
 @app.route('/python/<text>', strict_slashes=False)
-def display_python_text(text):
-    text = unquote(text.replace('_', ' '))
-    return f'Python {text}'
+def pytext(text=''):
+    '''Returns a subdirectory page of Python'''
+    if text == '':
+        result = 'is cool'
+    elif '_' in text:
+        result = text.replace('_', ' ')
+    else:
+        result = text
+    return 'Python {}'.format(result)
 
 
 @app.route('/number/<int:n>', strict_slashes=False)
-def display_number(n):
-    return f'{n} is a number'
+def isint(n):
+    return '{:d} is a number'.format(n)
 
 
 @app.route('/number_template/<int:n>', strict_slashes=False)
-def display_number_template(n):
-    if isinstance(n, int):
-        return render_template('number.html', n=n)
-    else:
-        return 'Not a valid integer'
-
+def isint_html(n):
+    return render_template('5-number.html', number=n)
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
